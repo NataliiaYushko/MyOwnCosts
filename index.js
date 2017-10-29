@@ -46,46 +46,46 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
         },
         'post.chemicals': () => {
-
+            SendSimpleResponseOnPostAction('Test case chemicals');
         },
         'post.others': () => {
-
+            SendSimpleResponseOnPostAction('Test case others');
         },
         'post.health': () => {
-
+            SendSimpleResponseOnPostAction('Test case health');
         },
         'post.utilities': () => {
-
+            SendSimpleResponseOnPostAction('Test case utilities');
         },
         'post.clothes': () => {
-
+            SendSimpleResponseOnPostAction('Test case clothes');
         },
         'post.eat': () => {
-
+            SendSimpleResponseOnPostAction('Test case eat');
         },
         'post.toiletware': () => {
-
+            SendSimpleResponseOnPostAction('Test case toiletware');
         },
         'post.travel': () => {
-
+            SendSimpleResponseOnPostAction('Test case travel');
         },
         'post.entertainment': () => {
-
+            SendSimpleResponseOnPostAction('Test case entertainment');
         },
         'post.family': () => {
-
+            SendSimpleResponseOnPostAction('Test case family');
         },
         'post.technique': () => {
-
+            SendSimpleResponseOnPostAction('Test case technique');
         },
         'post.transport': () => {
-
+            SendSimpleResponseOnPostAction('Test case transport');
         },
         'show.statistics': () => {
-
+            SendSimpleResponseOnPostAction('Test case statistics');
         },
         'menu.open': () => {
-
+            SendSimpleResponseOnPostAction('Test case menu.open');
         },
         // Default handler for unknown or undefined actions
         'default': () => {
@@ -167,6 +167,14 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
             response.json(responseJson); // Send response to Dialogflow
         }
+    }
+    function SendSimpleResponseOnPostAction(message) {
+        // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+        if (requestSource === googleAssistantRequest) {
+           sendGoogleResponse(message); // Send simple response to user
+       } else {
+           sendResponse(message); // Send simple response to user
+       }
     }
 });
 
