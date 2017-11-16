@@ -1,14 +1,13 @@
-'use strict';
-
+const firebase = require("./firebase");
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
-
+const User = require("./user");
 const googleAssistantRequest = 'google'; // Constant to identify Google Assistant requests
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
     console.log('Request headers: ' + JSON.stringify(request.headers));
     console.log('Request body: ' + JSON.stringify(request.body));
-
+    // firebase.initializeApp(functions.config().firebase);
     // An action is a string used to identify what needs to be done in fulfillment
     let action = request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
 
@@ -20,6 +19,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
     // Get the request source (Google Assistant, Slack, API, etc) and initialize DialogflowApp
     const requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
+    
     const app = new DialogflowApp({
         request: request,
         response: response
@@ -29,11 +29,38 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     const actionHandlers = {
         // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
         'input.welcome': () => {
+            switch(requestSource) {
+                case googleAssistantRequest:
+                sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
+                break;
+                case 'facebook':
+                sendResponse('Hello, Welcome to my Dialogflow agent!');
+                var date = new Date();
+                var jsonuser = request.body.originalRequest.data.sender;
+                var user1 = {
+                    id : jsonuser.id,
+                    reg_date : date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(),
+                    chanell : requestSource
+                };
+                firebase.default.writeUserData(user1.id, user1);
+                break;
+                case 'telegram':
+                sendResponse('Hello, Welcome to my Dialogflow agent!1');
+                var date = new Date();
+                var jsonuser = request.body.originalRequest.data.message.from;
+                console.log('jsonuser: ' + JSON.stringify(jsonuser));
+                var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), requestSource);
+                firebase.default.writeUserData(user1.id, user1);
+                break;
+                default:
+                sendResponse('Hello, Welcome to my Dialogflow agent!');
+                break;
+            }
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
-                sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
+                
             } else {
-                sendResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
+                 // Send simple response to user
             }
         },
         // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
@@ -53,6 +80,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         },
         'post.health': () => {
             SendSimpleResponseOnPostAction('Test case health');
+            firebasemodule.checkDataByField('users', 'value', 'id', user.fbid).then(res => {
+                firebasemodule.insertData('users', user, res).then((d)=> {
+                }).catch(ex => {
+                    console.log(ex);
+                })
+            })
         },
         'post.utilities': () => {
             SendSimpleResponseOnPostAction('Test case utilities');
@@ -85,7 +118,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             SendSimpleResponseOnPostAction('Test case statistics');
         },
         'menu.open': () => {
-            SendSimpleResponseOnPostAction('Test case menu.open');
+            SendSimpleResponseOnPostAction('Test case menu');
         },
         // Default handler for unknown or undefined actions
         'default': () => {
@@ -117,6 +150,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
     // Run the proper handler function to handle the request from Dialogflow
     actionHandlers[action]();
+
+    function SendSimpleResponseOnPostAction(message) {
+         // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+         if (requestSource === googleAssistantRequest) {
+            sendGoogleResponse(message); // Send simple response to user
+        } else {
+            sendResponse(message); // Send simple response to user
+        }
+    }
 
     // Function to send correctly formatted Google Assistant responses to Dialogflow which are then sent to the user
     function sendGoogleResponse(responseToUser) {
@@ -167,14 +209,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
             response.json(responseJson); // Send response to Dialogflow
         }
-    }
-    function SendSimpleResponseOnPostAction(message) {
-        // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-        if (requestSource === googleAssistantRequest) {
-           sendGoogleResponse(message); // Send simple response to user
-       } else {
-           sendResponse(message); // Send simple response to user
-       }
     }
 });
 

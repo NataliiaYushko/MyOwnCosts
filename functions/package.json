@@ -1,21 +1,19 @@
 {
-  "name": "dialogflowFirebaseFulfillment",
-  "description": "Bot which control your money",
-  "version": "0.0.1",
-  "private": true,
-  "license": "Apache Version 2.0",
-  "author": "Google Inc.",
-  "engines": {
-    "node": "~6.0"
-  },
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
   "scripts": {
-    "start": "firebase serve --only functions:dialogflowFirebaseFulfillment",
-    "deploy": "firebase deploy --only functions:dialogflowFirebaseFulfillment"
+    "serve": "firebase serve --only functions",
+    "shell": "firebase experimental:functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
   },
   "dependencies": {
     "actions-on-google": "^1.5.x",
+    "apiai": "^4.0.3",
+    "firebase": "^4.6.0",
     "firebase-admin": "^4.2.1",
-    "firebase-functions": "^0.5.7",
-    "apiai": "^4.0.3"
-  }
+    "firebase-functions": "^0.5.7"
+  },
+  "private": true
 }

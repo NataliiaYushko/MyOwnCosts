@@ -1,0 +1,69 @@
+{
+    "originalRequest": {
+        "source": "facebook",
+        "data": {
+            "postback": {
+                "payload": "FACEBOOK_WELCOME",
+                "title": "Get Started"
+            },
+            "sender": {
+                "id": "1346079112184624"
+            },
+            "recipient": {
+                "id": "288266071678434"
+            },
+            "timestamp": 1509306955082
+        }
+    },
+    "id": "b840c6a6-c42d-4ac5-9a0c-d2569e6cbfb2",
+    "timestamp": "2017-10-29T19:55:55.453Z",
+    "lang": "ru",
+    "result": {
+        "source": "agent",
+        "resolvedQuery": "FACEBOOK_WELCOME",
+        "speech": "",
+        "action": "input.welcome",
+        "actionIncomplete": false,
+        "parameters": {},
+        "contexts": [{
+            "name": "facebook_welcome",
+            "parameters": {},
+            "lifespan": 0
+        }, {
+            "name": "generic",
+            "parameters": {
+                "transport.original": "автобус",
+                "cost": "10",
+                "cost.original": "10",
+                "transport": "Проезд",
+                "facebook_sender_id": "1346079112184624"
+            },
+            "lifespan": 3
+        }],
+        "metadata": {
+            "intentId": "39085da3-b1f7-4a0f-b767-4ee966a1d5b9",
+            "webhookUsed": "true",
+            "webhookForSlotFillingUsed": "false",
+            "intentName": "Default Welcome Intent"
+        },
+        "fulfillment": {
+            "speech": "Добрый день!",
+            "messages": [{
+                "type": 0,
+                "platform": "facebook",
+                "id": "acf955cb-45f9-421c-9bf4-fcbd1e5aa293",
+                "speech": "Здравствуй!"
+            }, {
+                "type": 0,
+                "id": "acf955cb-45f9-421c-9bf4-fcbd1e5aa293",
+                "speech": "Добрый день!"
+            }]
+        },
+        "score": 1
+    },
+    "status": {
+        "code": 200,
+        "errorType": "success"
+    },
+    "sessionId": "e9e169ca-736a-4dc2-8b37-53d94889317a"
+}

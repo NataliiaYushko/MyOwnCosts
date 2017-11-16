@@ -1,0 +1,80 @@
+{
+    "originalRequest": {
+        "source": "telegram",
+        "data": {
+            "update_id": 115168338,
+            "message": {
+                "date": 1509307266,
+                "entities": [{
+                    "offset": 0,
+                    "length": 6,
+                    "type": "bot_command"
+                }],
+                "chat": {
+                    "last_name": "Kosovnenko",
+                    "id": 132905186,
+                    "type": "private",
+                    "first_name": "Roman",
+                    "username": "Roman_Kosovnenko"
+                },
+                "message_id": 122,
+                "from": {
+                    "language_code": "en-US",
+                    "last_name": "Kosovnenko",
+                    "id": 132905186,
+                    "is_bot": false,
+                    "first_name": "Roman",
+                    "username": "Roman_Kosovnenko"
+                },
+                "text": "/start"
+            }
+        }
+    },
+    "id": "d7994fbe-9965-429f-b232-c9a7246a45b6",
+    "timestamp": "2017-10-29T20:01:11.491Z",
+    "lang": "ru",
+    "result": {
+        "source": "agent",
+        "resolvedQuery": "TELEGRAM_WELCOME",
+        "speech": "",
+        "action": "input.welcome",
+        "actionIncomplete": false,
+        "parameters": {},
+        "contexts": [{
+            "name": "telegram_welcome",
+            "parameters": {},
+            "lifespan": 0
+        }, {
+            "name": "generic",
+            "parameters": {
+                "telegram_chat_id": "132905176"
+            },
+            "lifespan": 4
+        }],
+        "metadata": {
+            "intentId": "39085da3-b1f7-4a0f-b767-4ee966a1d5b9",
+            "webhookUsed": "true",
+            "webhookForSlotFillingUsed": "false",
+            "intentName": "Default Welcome Intent"
+        },
+        "fulfillment": {
+            "speech": "Здравствуй!",
+            "messages": [{
+                "type": 0,
+                "platform": "facebook",
+                "id": "acf955cb-45f9-421c-9bf4-fcbd1e5aa293",
+                "speech": "Добрый день!"
+            }, {
+                "type": 0,
+                "id": "acf955cb-45f9-421c-9bf4-fcbd1e5aa293",
+                "speech": "Добрый день!"
+            }]
+        },
+        "score": 1
+    },
+    "status": {
+        "code": 200,
+        "errorType": "success"
+    },
+    "sessionId": "bf80b215-13c7-4176-a418-da7843a6196f"
+}

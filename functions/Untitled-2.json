@@ -1,0 +1,64 @@
+{
+    "originalRequest": {
+        "source": "facebook",
+        "data": {
+            "sender": {
+                "id": "1346079112184624"
+            },
+            "recipient": {
+                "id": "288266071678434"
+            },
+            "message": {
+                "mid": "mid.$cAAFc3qWUVqhlmvTd-Vfaa-VH71-5",
+                "text": "автобус 10",
+                "seq": 5687
+            },
+            "timestamp": 1509306635769
+        }
+    },
+    "id": "7396c53d-0d91-4d92-b71c-b36ac376f4d5",
+    "timestamp": "2017-10-29T19:50:36.715Z",
+    "lang": "ru",
+    "result": {
+        "source": "agent",
+        "resolvedQuery": "автобус 10",
+        "speech": "",
+        "action": "post.transport",
+        "actionIncomplete": false,
+        "parameters": {
+            "cost": "10",
+            "transport": "Проезд"
+        },
+        "contexts": [{
+            "name": "generic",
+            "parameters": {
+                "transport.original": "автобус",
+                "cost": "10",
+                "cost.original": "10",
+                "transport": "Проезд",
+                "facebook_sender_id": "1346079112184624"
+            },
+            "lifespan": 4
+        }],
+        "metadata": {
+            "intentId": "01b577c7-f93d-4a7b-a380-e6d0f2677631",
+            "webhookUsed": "true",
+            "webhookForSlotFillingUsed": "false",
+            "intentName": "Транспорт"
+        },
+        "fulfillment": {
+            "speech": "Все сделано, записал Проезд 10 !!!",
+            "messages": [{
+                "type": 0,
+                "id": "0959a128-7850-4e71-b45e-47d4e8174956",
+                "speech": "Все сделано, записал Проезд 10 !!!"
+            }]
+        },
+        "score": 0.9599999785423279
+    },
+    "status": {
+        "code": 200,
+        "errorType": "success"
+    },
+    "sessionId": "e9e169ca-736a-4dc2-8b37-53d94889317a"
+}
