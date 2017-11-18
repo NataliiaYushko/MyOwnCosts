@@ -7,7 +7,7 @@ admin.initializeApp({
         privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC18aToF4DUNcgx\nNLxF5bdLCDTBNabZguvDXi8HHa/EjWfEjDqA0yUC+L0pJONSbAtmvtAoELHIyuAM\nFutDNhxzyf2eMdjlWE6OzFo50axk/w8qXTJKevj7Xyls2GXVIn+UmUU99sWZEO10\ndjmgsElkA5mN14Q6SVsriJqCtyt0KOdEvPJH7fC+49qCKQ5EBp7wU9tRxysgZciE\nMIXVEfmeGiOhIfnFXlfTcdsCRUqpn71xE/zMrWAu2xqJBlpJ9BqxeC+3Sc+8lecC\nLj45KdlSaEgVyQAdzOBxNG5nT6ip8oAodbaiVA2twbv+emSy3Ky/XloX8EhMYEGr\n/WLaba81AgMBAAECggEAQKerW1Km1EJ8bof387rLJN24qYQgU6FDmLyKZ7Pz9xvs\n6RqP26GswF6WEd3q7io47v0VyXcNRnZZodIvLkY3XCpGdwXttqpn2DTkRzGsWoOM\n5xgRPAhxHBrYBLbtkQzeW3cP9RIRa/BpAX7VwbWDjwf8dDxG39Obk1/K0HK4/WDF\n3d1k0wBE9PJmq29v76oI4sT0s62bTzDPPprqpK7cp3pS89Ips8gddVtV+q/BV02V\nXkxVxU+OoKzEmWBSlJALJjNgRPkvZhV6npboohLHUD7Q/Q1W9ZbgRQknZmXA6csP\nEze8SRnhwFqIF/tUPUQEgwvAvpNGKSVJHgPLJvVsbQKBgQDpKEZa9+Sqg2Kh0/gt\nEpO3a6GHv8O1Vlo7LIOU9tGsg0fUG+8jU45n5a9eqGVYi8afhqDBkvMrX0pfC758\nFTVCG5WFwjMxeVVx1pmqzZ2bAQIRQpVb0e5hg0BJykIYtpZ6P7k2pGXyMNJ8RUPA\n4TuKedsE6qaAm28GyDevSiyE5wKBgQDHxOgXEmxcCe++Cn4CNoRBU+R33CoN5GGj\nno1eRKDG6vjjkC27Qt24DLSQ1ysIsbTg+cmkI9lb866Hj2LMtSD9E8kc0r5NR4Sl\ncp4uQg7tQqg7PtAYYxCRPmE52DZAn8NioFIwEY9/hsfTWDk+H1eephxN12exaogY\nvorTItpLgwKBgDCUYqxbkDpy658aQlBp2XtTIrHdI9Lprh08NiJYlvFh3Rp1w4rR\nww8kzThkz9D2NqlQbLhIfQAhd6Z8FPFXneQrSSk4gGAjjskMVLJA60C7ogmknOgn\nwopwxXlaehEaIhpQoq+e61reD00zRV2v0C8XGqpYld6gBC8eknOkecgrAoGAbyMQ\nq6VIO3wbsHJN4BVMRrvRYw1NKCViXJCcvVEY0RFwHcncZ02v4/DNk7bg7hlPM8pD\nb9mx1wIemrQelxw9mg4j2LE1xfB/zzuQ3NNLUpu+1BcB1k9mrCc0F+Y9aH55SKlA\nkBV069Gj4eQ3FGSDbnOjU3r+6SkHRhzbRtMg9tkCgYBpRacp81KW8qIzG/k8Pppo\nwTl/hmc1FTzzDqMQOFqxmVjVhus9k04D3ppkgLC9oI+16g7KWedE/2dnYX2JpFqi\ne2AzVVEBq8vtfyH9T4kSVO8dLFkjmDCj7GCf4l/5Hdr4AY9fC1WTo/0gqILDIGRP\nE6pujA/TkpP5CJ45bdpzJA==\n-----END PRIVATE KEY-----\n"
     }),
     databaseURL: "https://myowncosts-2ad50.firebaseio.com"
-  });
+});
 var firebase = admin;
 class FireBaseModule {
     static selectDataByField(data_path, getFrom, field, fieldValue) {
@@ -46,24 +46,35 @@ class FireBaseModule {
             fbRef.orderByChild(field).equalTo(fieldValue).limitToFirst(1).once(getFrom, (snapshot) => {
                 if (snapshot.hasChildren()) {
                     resolve(snapshot.key);
-                }
-                else {
+                } else {
                     resolve(null);
                 }
             });
         });
     }
     static writeUserData(userId, user) {
-        return new Promise((resolve) => {
-            let userRef = firebase.database().ref('/users/' + userId);
-            userRef.once("value")
-                .then(function (snapshot) {
-                    if (!snapshot.hasChildren()) {
-                        firebase.database().ref('users/' + user.id).set(user);
-                        resolve(user);
-                    }
-                });
+        let userRef = firebase.database().ref('/users/' + userId);
+        userRef.once("value", function (snapshot) {
+                if (!snapshot.hasChildren()) {
+                    firebase.database().ref('users/' + user.id).set(user);
+                }
+            });
+    }
+
+
+    static writeCostData(userId, category, date, cost) {
+        let userRefCosts = firebase.database().ref('/users/' + userId + '/costs');
+        userRefCosts.push();
+        userRefCosts.push({
+            value: cost,
+            date: date,
+            location: 'null',
+            category: category
         });
     }
+
+
+
+
 }
 exports.default = FireBaseModule;

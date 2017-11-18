@@ -19,7 +19,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
     // Get the request source (Google Assistant, Slack, API, etc) and initialize DialogflowApp
     const requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
-    
+
+    const userId = requestSource == 'telegram' ? request.body.originalRequest.data.message.from.id : request.body.originalRequest.data.sender.id;
+    const date = new Date();
     const app = new DialogflowApp({
         request: request,
         response: response
@@ -35,7 +37,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 break;
                 case 'facebook':
                 sendResponse('Hello, Welcome to my Dialogflow agent!');
-                var date = new Date();
                 var jsonuser = request.body.originalRequest.data.sender;
                 var user1 = {
                     id : jsonuser.id,
@@ -46,7 +47,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 break;
                 case 'telegram':
                 sendResponse('Hello, Welcome to my Dialogflow agent!1');
-                var date = new Date();
                 var jsonuser = request.body.originalRequest.data.message.from;
                 console.log('jsonuser: ' + JSON.stringify(jsonuser));
                 var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), requestSource);
@@ -112,7 +112,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             SendSimpleResponseOnPostAction('Test case technique');
         },
         'post.transport': () => {
-            SendSimpleResponseOnPostAction('Test case transport');
+            firebase.default.writeCostData(userId, 'transport', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'show.statistics': () => {
             SendSimpleResponseOnPostAction('Test case statistics');
