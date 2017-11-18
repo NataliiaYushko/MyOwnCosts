@@ -73,43 +73,48 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
         },
         'post.chemicals': () => {
-            SendSimpleResponseOnPostAction('Test case chemicals');
+            firebase.default.writeCostData(userId, 'chemicals', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.others': () => {
-            SendSimpleResponseOnPostAction('Test case others');
+            firebase.default.writeCostData(userId, 'others', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.health': () => {
-            SendSimpleResponseOnPostAction('Test case health');
-            firebasemodule.checkDataByField('users', 'value', 'id', user.fbid).then(res => {
-                firebasemodule.insertData('users', user, res).then((d)=> {
-                }).catch(ex => {
-                    console.log(ex);
-                })
-            })
+            firebase.default.writeCostData(userId, 'health', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.utilities': () => {
-            SendSimpleResponseOnPostAction('Test case utilities');
+            firebase.default.writeCostData(userId, 'utilities', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.clothes': () => {
-            SendSimpleResponseOnPostAction('Test case clothes');
+            firebase.default.writeCostData(userId, 'clothes', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.eat': () => {
-            SendSimpleResponseOnPostAction('Test case eat');
+            firebase.default.writeCostData(userId, 'eat', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.toiletware': () => {
-            SendSimpleResponseOnPostAction('Test case toiletware');
+            firebase.default.writeCostData(userId, 'toiletware', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.travel': () => {
-            SendSimpleResponseOnPostAction('Test case travel');
+            firebase.default.writeCostData(userId, 'travel', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.entertainment': () => {
-            SendSimpleResponseOnPostAction('Test case entertainment');
+            firebase.default.writeCostData(userId, 'entertainment', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.family': () => {
-            SendSimpleResponseOnPostAction('Test case family');
+            firebase.default.writeCostData(userId, 'family', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.technique': () => {
-            SendSimpleResponseOnPostAction('Test case technique');
+            firebase.default.writeCostData(userId, 'technique', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.transport': () => {
             firebase.default.writeCostData(userId, 'transport', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
