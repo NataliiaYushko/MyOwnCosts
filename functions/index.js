@@ -33,10 +33,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         'input.welcome': () => {
             switch(requestSource) {
                 case googleAssistantRequest:
-                sendGoogleResponse('Hello, Welcome to my Dialogflow agent!'); // Send simple response to user
+                sendGoogleResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)'); // Send simple response to user
                 break;
                 case 'facebook':
-                sendResponse('Hello, Welcome to my Dialogflow agent!');
+                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                 var jsonuser = request.body.originalRequest.data.sender;
                 var user1 = {
                     id : jsonuser.id,
@@ -46,14 +46,14 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 firebase.default.writeUserData(user1.id, user1);
                 break;
                 case 'telegram':
-                sendResponse('Hello, Welcome to my Dialogflow agent!1');
+                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                 var jsonuser = request.body.originalRequest.data.message.from;
                 console.log('jsonuser: ' + JSON.stringify(jsonuser));
                 var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), requestSource);
                 firebase.default.writeUserData(user1.id, user1);
                 break;
                 default:
-                sendResponse('Hello, Welcome to my Dialogflow agent!');
+                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                 break;
             }
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
@@ -125,7 +125,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         },
         'menu.open': () => {
             SendSimpleResponseOnPostAction('Test case menu');
-        },
+       },
         // Default handler for unknown or undefined actions
         'default': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
