@@ -69,7 +69,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             if (requestSource === googleAssistantRequest) {
                 sendGoogleResponse('I\'m having trouble, can you try that again?'); // Send simple response to user
             } else {
-                sendResponse('I\'m having trouble, can you try that again?'); // Send simple response to user
+                SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech); // Send simple response to user
             }
         },
         'post.chemicals': () => {
@@ -138,13 +138,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 };
                 sendGoogleResponse(responseToUser);
             } else {
-                let responseToUser = {
-                    //richResponses: richResponses, // Optional, uncomment to enable
-                    //outputContexts: [{'name': 'weather', 'lifespan': 2, 'parameters': {'city': 'Rome'}}], // Optional, uncomment to enable
-                    speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
-                    displayText: 'This is from Dialogflow\'s Cloud Functions for Firebase editor! :-)' // displayed response
-                };
-                sendResponse(responseToUser);
+                SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
             }
         }
     };
