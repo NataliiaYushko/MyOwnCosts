@@ -55,10 +55,10 @@ class FireBaseModule {
     static writeUserData(userId, user) {
         let userRef = firebase.database().ref('/users/' + userId);
         userRef.once("value", function (snapshot) {
-                if (!snapshot.hasChildren()) {
-                    firebase.database().ref('users/' + user.id).set(user);
-                }
-            });
+            if (!snapshot.hasChildren()) {
+                firebase.database().ref('users/' + user.id).set(user);
+            }
+        });
     }
 
 
@@ -67,9 +67,26 @@ class FireBaseModule {
         userRefCosts.push();
         userRefCosts.push({
             value: cost,
-            date: date,
+            date: date.toDateString(),
+            sys_date : date.getTime(),
             location: 'null',
             category: category
+        });
+    }
+
+    static GetCostsStatistics(userId, startDate, category) {
+        return new Promise((resolve) => {
+            let costsRef = firebase.database().ref('/users/' + userId + '/costs');
+            var dictionary = {};
+            costsRef.orderByChild("sys_date").startAt(startDate.getTime()).once("value").then(function (snapshot) {
+                snapshot.forEach(function (data) {
+                    dictionary[data.val().category] = 0;
+                });
+                snapshot.forEach(function (data) {
+                    dictionary[data.val().category] = dictionary[data.val().category] + Number(data.val().value);
+                });
+                resolve(dictionary);
+            });
         });
     }
 
