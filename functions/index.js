@@ -126,6 +126,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         'menu.open': () => {
             SendSimpleResponseOnPostAction('Test case menu');
        },
+       'post.help': () => {
+        SendSimpleResponseOnPostAction('Тут будет текст хелпа');
+    },
         // Default handler for unknown or undefined actions
         'default': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
