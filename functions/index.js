@@ -31,36 +31,36 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     const actionHandlers = {
         // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
         'input.welcome': () => {
-            switch(requestSource) {
+            switch (requestSource) {
                 case googleAssistantRequest:
-                sendGoogleResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)'); // Send simple response to user
-                break;
+                    sendGoogleResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)'); // Send simple response to user
+                    break;
                 case 'facebook':
-                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
-                var jsonuser = request.body.originalRequest.data.sender;
-                var user1 = {
-                    id : jsonuser.id,
-                    reg_date : date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(),
-                    chanell : requestSource
-                };
-                firebase.default.writeUserData(user1.id, user1);
-                break;
+                    sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
+                    var jsonuser = request.body.originalRequest.data.sender;
+                    var user1 = {
+                        id: jsonuser.id,
+                        reg_date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(),
+                        chanell: requestSource
+                    };
+                    firebase.default.writeUserData(user1.id, user1);
+                    break;
                 case 'telegram':
-                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
-                var jsonuser = request.body.originalRequest.data.message.from;
-                console.log('jsonuser: ' + JSON.stringify(jsonuser));
-                var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), requestSource);
-                firebase.default.writeUserData(user1.id, user1);
-                break;
+                    sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
+                    var jsonuser = request.body.originalRequest.data.message.from;
+                    console.log('jsonuser: ' + JSON.stringify(jsonuser));
+                    var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), requestSource);
+                    firebase.default.writeUserData(user1.id, user1);
+                    break;
                 default:
-                sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
-                break;
+                    sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
+                    break;
             }
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
-                
+
             } else {
-                 // Send simple response to user
+                // Send simple response to user
             }
         },
         // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
@@ -73,67 +73,71 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
         },
         'post.chemicals': () => {
-            firebase.default.writeCostData(userId, 'chemicals', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'chemicals', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.others': () => {
-            firebase.default.writeCostData(userId, 'others', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'others', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.health': () => {
-            firebase.default.writeCostData(userId, 'health', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'health', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.utilities': () => {
-            firebase.default.writeCostData(userId, 'utilities', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'utilities', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.clothes': () => {
-            firebase.default.writeCostData(userId, 'clothes', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'clothes', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.eat': () => {
-            firebase.default.writeCostData(userId, 'eat', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'eat', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.toiletware': () => {
-            firebase.default.writeCostData(userId, 'toiletware', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'toiletware', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.travel': () => {
-            firebase.default.writeCostData(userId, 'travel', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'travel', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.entertainment': () => {
-            firebase.default.writeCostData(userId, 'entertainment', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'entertainment', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.family': () => {
-            firebase.default.writeCostData(userId, 'family', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'family', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.technique': () => {
-            firebase.default.writeCostData(userId, 'technique', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'technique', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.transport': () => {
-            firebase.default.writeCostData(userId, 'transport', date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear(), parameters.cost);
+            firebase.default.writeCostData(userId, 'transport', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'show.statistics': () => {
-            SendSimpleResponseOnPostAction('Test case statistics');
+            var dateStat = new Date();
+            dateStat.setTime(dateStat.getTime() - 31 * 86400000)
+            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((count) => {
+                SendSimpleResponseOnPostAction('Статистика трат за месяц: ' + count);
+            });
         },
         'menu.open': () => {
             SendSimpleResponseOnPostAction('Test case menu');
-       },
-       'post.help': () => {
-        SendSimpleResponseOnPostAction('Тут будет текст хелпа');
-    },
+        },
+        'post.help': () => {
+            SendSimpleResponseOnPostAction('Тут будет текст хелпа');
+        },
         // Default handler for unknown or undefined actions
         'default': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
-                let responseToUser = {
+                var responseToUser = {
                     //googleRichResponse: googleRichResponse, // Optional, uncomment to enable
                     //googleOutputContexts: ['weather', 2, { ['city']: 'rome' }], // Optional, uncomment to enable
                     speech: 'This message is from Dialogflow\'s Cloud Functions for Firebase editor!', // spoken response
@@ -155,8 +159,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     actionHandlers[action]();
 
     function SendSimpleResponseOnPostAction(message) {
-         // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
-         if (requestSource === googleAssistantRequest) {
+        // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+        if (requestSource === googleAssistantRequest) {
             sendGoogleResponse(message); // Send simple response to user
         } else {
             sendResponse(message); // Send simple response to user
