@@ -123,19 +123,19 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         'show.statistics': () => {
             var dateStat = new Date();
             dateStat.setTime(dateStat.getTime() - 31 * 86400000)
-            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((count) => {
-                SendSimpleResponseOnPostAction('Статистика трат за месяц: ' + count);
+            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                var str = 'Статистика трат за месяц:\n';
+                for(key in dictionary){
+                    str = str + key + ' : ' + dictionary[key] + '\n';
+                  }
+                SendSimpleResponseOnPostAction(str);
             });
         },
         'menu.open': () => {
             SendSimpleResponseOnPostAction('Test case menu');
         },
         'post.help': () => {
-            SendSimpleResponseOnPostAction('Не можешь найти со мной общий язык?:с Ну не проблема, сейчас я тебе все быстренько обьясню)'+
-			'\n'+'Добавить новый расход легко: просто попроси меня об этом, указав на что и какую сумму ты потратил, например: "Вкусняшки для любимого бота 200"'+
-			'\n'+'Ты всегда можешь просмотреть статистику, указав за какой период и/или по какой категории данные тебя интерисуют, например: "статистика за месяц транспорт"'+
-			+'\n'+'Кроме того, я могу даже красивенько нарисовать графики твоих расходов (талантливый бот талантлив во всем)). Просто задай период и/или категорию и я в ответ пришлю тебе свое творение.'+
-			"\n"+"Ты можешь общатся со мной так, как тебе удобно, я все пойму, я же умненький)");
+            SendSimpleResponseOnPostAction('Тут будет текст хелпа');
         },
         // Default handler for unknown or undefined actions
         'default': () => {
