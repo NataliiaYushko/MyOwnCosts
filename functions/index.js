@@ -123,8 +123,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         'show.statistics': () => {
             var dateStat = new Date();
             dateStat.setTime(dateStat.getTime() - 31 * 86400000)
-            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((count) => {
-                SendSimpleResponseOnPostAction('Статистика трат за месяц: ' + count);
+            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                var str = 'Статистика трат за месяц:\n';
+                for(key in dictionary){
+                    str = str + key + ' : ' + dictionary[key] + '\n';
+                  }
+                SendSimpleResponseOnPostAction(str);
             });
         },
         'menu.open': () => {
