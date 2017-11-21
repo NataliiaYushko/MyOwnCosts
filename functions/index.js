@@ -120,15 +120,47 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             firebase.default.writeCostData(userId, 'transport', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
-        'show.statistics': () => {
+        'show.statistics.step1': () => {
+            console.log(JSON.stringify(parameters));
+            if (parameters.date != "") {
+                var dateStat = new Date();
+                var dateParametr = new Date(parameters.date);
+                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
+                console.log(dateStat.toDateString());
+                firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                    var str = 'Статистика трат от ' + dateStat.toDateString() +  ':\n';
+                    for (key in dictionary) {
+                        str = str + key + ' : ' + dictionary[key] + '\n';
+                    }
+                    SendSimpleResponseOnPostAction(str);
+                });
+            } else {
+                sendRichResponse(request.body.result.fulfillment.speech, richResponsesStatisticsStep1);
+            }
+        },
+        'show.statistics.step2': () => {
             var dateStat = new Date();
-            dateStat.setTime(dateStat.getTime() - 31 * 86400000)
+            var str = 'Статистика трат за ';
+            console.log(request.body.result.resolvedQuery)
+            switch (request.body.result.resolvedQuery) {
+                case 'За день':
+                str = str + 'день:\n';
+                dateStat.setTime(dateStat.getTime() - 1 * 86400000);
+                break;
+                case 'За месяц':
+                str = str = str + 'месяц:\n';
+                dateStat.setTime(dateStat.getTime() - 31 * 86400000);
+                break;
+                case 'За все время':
+                str = str = str + 'все время:\n';
+                dateStat.setFullYear(2017, 9, 1);
+                break;
+            }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
-                var str = 'Статистика трат за месяц:\n';
-                for(key in dictionary){
+                for (key in dictionary) {
                     str = str + key + ' : ' + dictionary[key] + '\n';
-                  }
-                SendSimpleResponseOnPostAction(str);
+                }
+                sendRichResponse(str, richResponsesStep2);
             });
         },
         'menu.open': () => {
@@ -140,6 +172,49 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             +			'\n'+'Ты всегда можешь просмотреть статистику, указав за какой период и/или по какой категории данные тебя интерисуют, например: "статистика за месяц транспорт"'+
             +			+'\n'+'Кроме того, я могу даже красивенько нарисовать графики твоих расходов (талантливый бот талантлив во всем)). Просто задай период и/или категорию и я в ответ пришлю тебе свое творение.'+
             +			"\n"+"Ты можешь общатся со мной так, как тебе удобно, я все пойму, я же умненький)");
+        },
+        'graphics.step1': () => {
+            if (parameters.date != "") {
+                var dateStat = new Date();
+                var dateParametr = new Date(parameters.date);
+                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
+                console.log(dateStat.toDateString());
+                firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                    var str = 'Графики трат от ' + dateStat.toDateString() + ':\n';
+                    for (key in dictionary) {
+                        str = str + key + ' : ' + dictionary[key] + '\n';
+                    }
+                    SendSimpleResponseOnPostAction(str);
+                });
+            } else {
+                sendRichResponse(request.body.result.fulfillment.speech, richResponsesGraphicksStep1);
+            }
+        },
+        'graphics.step2': () => {
+            var dateStat = new Date();
+            var str = 'Графики трат за ';
+            switch (request.body.result.resolvedQuery) {
+                case 'За день':
+                str = str + 'день:\n';
+                var dateParametr = new Date(dateStat.getDate() + '-' + (dateStat.getMonth()+1) + '-' + dateStat.getFullYear();
+                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
+                dateStat.setTime(dateStat.getTime() - 1 * 86400000);
+                break;
+                case 'За месяц':
+                str = str = str + 'месяц:\n';
+                dateStat.setTime(dateStat.getTime() - 31 * 86400000);
+                break;
+                case 'За все время':
+                str = str = str + 'все время:\n';
+                dateStat.setFullYear(2017, 9, 1);
+                break;
+            }
+            firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                for (key in dictionary) {
+                    str = str + key + ' : ' + dictionary[key] + '\n';
+                }
+                sendRichResponse(str, richResponsesStep2);
+            });
         },
         // Default handler for unknown or undefined actions
         'default': () => {
@@ -225,6 +300,30 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             response.json(responseJson); // Send response to Dialogflow
         }
     }
+
+    function sendRichResponse(responseToUser, richResponses) {
+
+        // If the response to the user includes rich responses or contexts send them to Dialogflow
+        let responseJson = {};
+
+        // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
+        responseJson.speech = responseToUser;
+        responseJson.displayText = responseToUser;
+
+        // Optional: add rich messages for integrations (https://dialogflow.com/docs/rich-messages)
+        responseJson.data = richResponses;
+        switch(requestSource) {
+            case 'telegram':
+            responseJson.data.telegram.text = responseToUser;
+            break;
+            case 'facebook':
+            break;
+        }
+        // Optional: add contexts (https://dialogflow.com/docs/contexts)
+        //responseJson.contextOut = inputContexts;
+
+        response.json(responseJson); // Send response to Dialogflow
+    }
 });
 
 // Construct rich response for Google Assistant
@@ -252,37 +351,60 @@ const googleRichResponse = app.buildRichResponse()
     });
 
 // Rich responses for both Slack and Facebook
-const richResponses = {
-    'slack': {
-        'text': 'This is a text response for Slack.',
-        'attachments': [{
-            'title': 'Title: this is a title',
-            'title_link': 'https://assistant.google.com/',
-            'text': 'This is an attachment.  Text in attachments can include \'quotes\' and most other unicode characters including emoji 📱.  Attachments also upport line\nbreaks.',
-            'image_url': 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
-            'fallback': 'This is a fallback.'
-        }]
-    },
-    'facebook': {
-        'attachment': {
-            'type': 'template',
-            'payload': {
-                'template_type': 'generic',
-                'elements': [{
-                    'title': 'Title: this is a title',
-                    'image_url': 'https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png',
-                    'subtitle': 'This is a subtitle',
-                    'default_action': {
-                        'type': 'web_url',
-                        'url': 'https://assistant.google.com/'
-                    },
-                    'buttons': [{
-                        'type': 'web_url',
-                        'url': 'https://assistant.google.com/',
-                        'title': 'This is a button'
-                    }]
-                }]
-            }
+const richResponsesGraphicksStep1 = {
+    'telegram': {
+        "text": "Выбери период статистики :)",
+        "reply_markup": {
+            "keyboard": [
+                [
+                    "За все время",
+                    "За месяц",
+                    "За день"
+                ],
+                [
+                    "Главное меню"
+                ]
+            ],
+            "one_time_keyboard": true,
+            "resize_keyboard": true
+        }
+    }
+};
+const richResponsesStatisticsStep1 = {
+    'telegram': {
+        "text": "Выбери нужный тебе вариант :)",
+        "reply_markup": {
+            "keyboard": [
+                [
+                    "За все время",
+                    "За месяц",
+                    "За день"
+                ],
+                [
+                    "Главное меню"
+                ]
+            ],
+            "one_time_keyboard": true,
+            "resize_keyboard": true
+        }
+    }
+};
+const richResponsesStep2 = {
+    'telegram': {
+        "text": "Выбери нужный тебе вариант: ",
+        "reply_markup": {
+            "keyboard": [
+                [
+                    "Статистика",
+                    "Графики"
+                ],
+                [
+                    "Подписка",
+                    "Справка"
+                ]
+            ],
+            "one_time_keyboard": true,
+            "resize_keyboard": true
         }
     }
 };
