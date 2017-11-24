@@ -125,10 +125,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             if (parameters.date != "") {
                 var dateStat = new Date();
                 var dateParametr = new Date(parameters.date);
-                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
+                dateParametr.setHours(0,0,0,0);
+                dateStat.setHours(0,0,0,0);
+                dateStat.setTime(dateStat.getTime() - Math.abs(dateParametr.getTime() - dateStat.getTime()));
                 console.log(dateStat.toDateString());
                 firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
-                    var str = 'Статистика трат от ' + dateStat.toDateString() +  ':\n';
+                    var str = 'Статистика трат от ' + dateStat.getDate() + '.' + (dateStat.getMonth()+1) + '.' + dateStat.getFullYear() +  ':\n';
                     for (key in dictionary) {
                         str = str + key + ' : ' + dictionary[key] + '\n';
                     }
@@ -145,15 +147,18 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             switch (request.body.result.resolvedQuery) {
                 case 'За день':
                 str = str + 'день:\n';
-                dateStat.setTime(dateStat.getTime() - 1 * 86400000);
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), dateStat.getDate());
+                dateStat.setHours(0,0,0,0);
                 break;
                 case 'За месяц':
                 str = str = str + 'месяц:\n';
-                dateStat.setTime(dateStat.getTime() - 31 * 86400000);
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), 1);
+                dateStat.setHours(0,0,0,0);
                 break;
                 case 'За все время':
                 str = str = str + 'все время:\n';
-                dateStat.setFullYear(2017, 9, 1);
+                dateStat.setFullYear(2017, 0, 1);
+                dateStat.setHours(0,0,0,0);
                 break;
             }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
@@ -177,10 +182,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             if (parameters.date != "") {
                 var dateStat = new Date();
                 var dateParametr = new Date(parameters.date);
-                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
+                dateParametr.setHours(0,0,0,0);
+                dateStat.setHours(0,0,0,0);
+                dateStat.setTime(dateStat.getTime() - Math.abs(dateParametr.getTime() - dateStat.getTime()));
                 console.log(dateStat.toDateString());
                 firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
-                    var str = 'Графики трат от ' + dateStat.toDateString() + ':\n';
+                    var str = 'Графики трат от ' + dateStat.getDate() + '.' + (dateStat.getMonth()+1) + '.' + dateStat.getFullYear()  + ':\n';
                     for (key in dictionary) {
                         str = str + key + ' : ' + dictionary[key] + '\n';
                     }
@@ -196,17 +203,18 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             switch (request.body.result.resolvedQuery) {
                 case 'За день':
                 str = str + 'день:\n';
-                var dateParametr = new Date(dateStat.getDate() + '-' + (dateStat.getMonth()+1) + '-' + dateStat.getFullYear();
-                dateStat.setTime(dateStat.getTime() - (dateParametr.getTime() - dateStat.getTime()));
-                dateStat.setTime(dateStat.getTime() - 1 * 86400000);
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), dateStat.getDate());
+                dateStat.setHours(0,0,0,0);
                 break;
                 case 'За месяц':
                 str = str = str + 'месяц:\n';
-                dateStat.setTime(dateStat.getTime() - 31 * 86400000);
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), 1);
+                dateStat.setHours(0,0,0,0);
                 break;
                 case 'За все время':
                 str = str = str + 'все время:\n';
-                dateStat.setFullYear(2017, 9, 1);
+                dateStat.setFullYear(2017, 0, 1);
+                dateStat.setHours(0,0,0,0);
                 break;
             }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
