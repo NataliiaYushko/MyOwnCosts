@@ -89,6 +89,13 @@ class FireBaseModule {
             });
         });
     }
+    static UpdateSubscription(userId, value) {
+        let updates = {};
+        updates['/users/' + userId + '/' + 'subscription'] = value;
+        firebase.database().ref().update(updates).then(() => {
+            resolve(key);
+        });
+    }
 
 
 
