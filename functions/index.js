@@ -1,4 +1,5 @@
 const firebase = require("./firebase");
+// const ChartjsNode = require('chartjs-node');
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 const User = require("./user");
@@ -73,51 +74,51 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
         },
         'post.chemicals': () => {
-            firebase.default.writeCostData(userId, 'chemicals', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Бытовая химия', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.others': () => {
-            firebase.default.writeCostData(userId, 'others', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Другое', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.health': () => {
-            firebase.default.writeCostData(userId, 'health', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Здоровье', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.utilities': () => {
-            firebase.default.writeCostData(userId, 'utilities', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Комунальные услуги', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.clothes': () => {
-            firebase.default.writeCostData(userId, 'clothes', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Одежда', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.eat': () => {
-            firebase.default.writeCostData(userId, 'eat', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Питание', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.toiletware': () => {
-            firebase.default.writeCostData(userId, 'toiletware', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Предметы туалета', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.travel': () => {
-            firebase.default.writeCostData(userId, 'travel', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Путешествия', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.entertainment': () => {
-            firebase.default.writeCostData(userId, 'entertainment', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Развлечения', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.family': () => {
-            firebase.default.writeCostData(userId, 'family', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Семья', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.technique': () => {
-            firebase.default.writeCostData(userId, 'technique', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Техника', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.transport': () => {
-            firebase.default.writeCostData(userId, 'transport', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Транспорт', date, parameters.cost);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'show.statistics.step1': () => {
@@ -167,6 +168,27 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 }
                 sendRichResponse(str, richResponsesStep2);
             });
+        },
+        'subscription.step1': () => {
+            sendRichResponse(request.body.result.fulfillment.speech, richResponsesSubscriptionStep1);
+        },
+        'subscription.step2': () => {
+            console.log(request.body.result.resolvedQuery)
+            switch (request.body.result.resolvedQuery) {
+                case 'Отменить подписку':
+                firebase.default.UpdateSubscription(userId, 'none');
+                break;
+                case 'Раз в месяц':
+                firebase.default.UpdateSubscription(userId, 'monthly');
+                break;
+                case 'Раз в неделю':
+                firebase.default.UpdateSubscription(userId, 'weekly');
+                break;
+                case 'Каждый день':
+                firebase.default.UpdateSubscription(userId, 'daily');
+                break;
+            }
+            sendRichResponse(request.body.result.fulfillment.speech, richResponsesStep2);
         },
         'menu.open': () => {
             SendSimpleResponseOnPostAction('Test case menu');
@@ -218,6 +240,32 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 break;
             }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                // var chartNode = new ChartjsNode(600, 600);
+                // return chartNode.drawChart(chartJsOptions)
+                // .then(() => {
+                //     // chart is created
+                
+                //     // get image as png buffer
+                //     return chartNode.getImageBuffer('image/png');
+                // })
+                // .then(buffer => {
+                //     Array.isArray(buffer) // => true
+                //     // as a stream
+                //     return chartNode.getImageStream('image/png');
+                // })
+                // .then(streamResult => {
+                //     // using the length property you can do things like
+                //     // directly upload the image to s3 by using the
+                //     // stream and length properties
+                //     streamResult.stream // => Stream object
+                //     streamResult.length // => Integer length of stream
+                //     // write to a file
+                //     return chartNode.writeImageToFile('image/png', './testimage.png');
+                // })
+                // .then(() => {
+                //     // chart is now written to the file path
+                //     // ./testimage.png
+                // });
                 for (key in dictionary) {
                     str = str + key + ' : ' + dictionary[key] + '\n';
                 }
@@ -397,6 +445,28 @@ const richResponsesStatisticsStep1 = {
         }
     }
 };
+const richResponsesSubscriptionStep1 = {
+    "telegram": {
+        "text": "Выбери, как часто буде приходить дайджест?",
+        "reply_markup": {
+            "keyboard": [
+                [
+                    "Каждый день",
+                    "Раз в неделю",
+                    "Раз в месяц"
+                ],
+                [
+                    "Отменить подписку"
+                ],
+                [
+                    "Главное меню"
+                ]
+            ],
+            "one_time_keyboard": true,
+            "resize_keyboard": true
+        }
+    }
+};
 const richResponsesStep2 = {
     'telegram': {
         "text": "Выбери нужный тебе вариант: ",
@@ -416,3 +486,58 @@ const richResponsesStep2 = {
         }
     }
 };
+
+const chartJsOptions = {
+    "type": "pie",
+    "data": {
+        "labels": [
+            "Бытовая химия",
+            "Другое", 
+            "Здоровье", 
+            "Комунальные услуги", 
+            "Одежда", 
+            "Питание", 
+            "Предметы туалета", 
+            "Путешествия", 
+            "Развлечения", 
+            "Семья", 
+            "Техника", 
+            "Транспорт"
+        ],
+        "datasets": [{
+            "data": [5, 19, 3, 5, 2, 3, 7, 8, 9, 10, 11, 12],
+            "backgroundColor": [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 159, 64, 0.2)",
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 159, 64, 0.2)"
+            ],
+            "borderColor": [
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)",
+                "rgba(black,1)"
+            ],
+            "borderWidth": 1
+        }]
+    },
+    "options": {
+
+    }
+}
