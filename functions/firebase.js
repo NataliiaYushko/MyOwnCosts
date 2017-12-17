@@ -62,14 +62,14 @@ class FireBaseModule {
     }
 
 
-    static writeCostData(userId, category, date, cost) {
+    static writeCostData(userId, category, date, cost, location) {
         let userRefCosts = firebase.database().ref('/users/' + userId + '/costs');
         userRefCosts.push();
         userRefCosts.push({
             value: cost,
             date: date.toDateString(),
             sys_date : date.getTime(),
-            location: 'null',
+            location: location,
             category: category
         });
     }

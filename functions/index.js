@@ -87,7 +87,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.others': () => {
-            firebase.default.writeCostData(userId, 'Другое', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Другое', date, parameters.cost,);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.health': () => {
@@ -103,7 +103,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.eat': () => {
-            firebase.default.writeCostData(userId, 'Питание', date, parameters.cost);
+            firebase.default.writeCostData(userId, 'Питание', date, parameters.cost, parameters.place);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.toiletware': () => {
