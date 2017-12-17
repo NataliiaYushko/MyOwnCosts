@@ -300,6 +300,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                     pie.setLegendSize(15);
                     for (key in dictionary) {
                         Counter++; 
+                        if (key == 'null') continue;
                         pie.addData(dictionary[key],key,Colors[Counter]);
                         labels.push(key);
                     }
@@ -342,6 +343,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 pie.setLegendColor('000000');
                 pie.setLegendSize(15);
                 for (key in dictionary) {
+                    if (key == 'null') continue;
                     Counter++; 
                     pie.addData(dictionary[key], key, Colors[Counter]);
                     labels.push(key);
