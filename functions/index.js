@@ -308,7 +308,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                     sendImageRichResponse(imageUrl, chartJsOptions);
                 });
             } else {
-                sendRichResponse(request.body.result.fulfillment.speech, richResponsesLocationsStep);
+                sendRichResponse(request.body.result.fulfillment.speech, richResponsesLocationsStep1);
             }
         },
         'location.step2': () => {
