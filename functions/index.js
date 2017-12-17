@@ -262,6 +262,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
                 var labels = [];
+                var Counter = 0; 
                 var pie = new Quiche('pie');
                 pie.setWidth(600);
                 pie.setHeight(400);
@@ -270,7 +271,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 pie.setLegendColor('000000');
                 pie.setLegendSize(15);
                 for (key in dictionary) {
-                    pie.addData(dictionary[key], key);
+                    Counter++; 
+                    pie.addData(dictionary[key], key, Colors[Counter]);
                     labels.push(key);
                 }
                 pie.setLabel(labels); // Add labels to pie segments
