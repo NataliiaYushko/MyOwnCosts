@@ -280,6 +280,77 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 sendImageRichResponse(imageUrl, chartJsOptions);
             });
         },
+        'location.step1': () => {
+            if (parameters.date != "") {
+                var dateStat = new Date();
+                var dateParametr = new Date(parameters.date);
+                dateParametr.setHours(0,0,0,0);
+                dateStat.setHours(0,0,0,0);
+                dateStat.setTime(dateStat.getTime() - Math.abs(dateParametr.getTime() - dateStat.getTime()));
+                console.log(dateStat.toDateString());
+                firebase.default.GetCostsStatisticsLocation(userId, dateStat).then((dictionary) => {
+                    var Counter = 0; 
+                    var labels = [];
+                    var pie = new Quiche('pie');
+                    pie.setWidth(600);
+                    pie.setHeight(400);
+                    pie.setLegendBottom();
+                    pie.setAutoScaling();
+                    pie.setLegendColor('000000');
+                    pie.setLegendSize(15);
+                    for (key in dictionary) {
+                        Counter++; 
+                        pie.addData(dictionary[key],key,Colors[Counter]);
+                        labels.push(key);
+                    }
+                    pie.setLabel(labels); // Add labels to pie segments
+                    var imageUrl = pie.getUrl(true); // First param controls http vs. https
+                    sendImageRichResponse(imageUrl, chartJsOptions);
+                });
+            } else {
+                sendRichResponse(request.body.result.fulfillment.speech, richResponsesLocationsStep);
+            }
+        },
+        'location.step2': () => {
+            var dateStat = new Date();
+            var str = 'Графики контрагентов за ';
+            switch (request.body.result.resolvedQuery) {
+                case 'За день':
+                str = str + 'день:\n';
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), dateStat.getDate());
+                dateStat.setHours(0,0,0,0);
+                break;
+                case 'За месяц':
+                str = str = str + 'месяц:\n';
+                dateStat.setFullYear(dateStat.getFullYear(), dateStat.getMonth(), 1);
+                dateStat.setHours(0,0,0,0);
+                break;
+                case 'За все время':
+                str = str = str + 'все время:\n';
+                dateStat.setFullYear(2017, 0, 1);
+                dateStat.setHours(0,0,0,0);
+                break;
+            }
+            firebase.default.GetCostsStatisticsLocation(userId, dateStat).then((dictionary) => {
+                var labels = [];
+                var Counter = 0; 
+                var pie = new Quiche('pie');
+                pie.setWidth(600);
+                pie.setHeight(400);
+                pie.setLegendBottom();
+                pie.setAutoScaling();
+                pie.setLegendColor('000000');
+                pie.setLegendSize(15);
+                for (key in dictionary) {
+                    Counter++; 
+                    pie.addData(dictionary[key], key, Colors[Counter]);
+                    labels.push(key);
+                }
+                pie.setLabel(labels); // Add labels to pie segments
+                var imageUrl = pie.getUrl(true); // First param controls http vs. https
+                sendImageRichResponse(imageUrl, chartJsOptions);
+            });
+         },
         // Default handler for unknown or undefined actions
         'default': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
@@ -435,13 +506,13 @@ const googleRichResponse = app.buildRichResponse()
 // Rich responses for both Slack and Facebook
 const richResponsesGraphicksStep1 = {
     'telegram': {
-        "text": "Выбери период статистики :)",
+        "text": "Выбери нужный вариант:",
         "reply_markup": {
             "keyboard": [
                 [
                     "За все время",
                     "За месяц",
-                    "За день"
+                    "За день",
                 ],
                 [
                     "Главное меню"
@@ -471,18 +542,15 @@ const richResponsesStatisticsStep1 = {
         }
     }
 };
-const richResponsesSubscriptionStep1 = {
+const richResponsesLocationsStep1 = {
     "telegram": {
-        "text": "Выбери, как часто буде приходить дайджест?",
+        "text": "Выбери период для графиков по контрагентам:",
         "reply_markup": {
             "keyboard": [
                 [
-                    "Каждый день",
-                    "Раз в неделю",
-                    "Раз в месяц"
-                ],
-                [
-                    "Отменить подписку"
+                    "За день",
+                    "За месяц",
+                    "За все время"
                 ],
                 [
                     "Главное меню"
@@ -503,7 +571,7 @@ const richResponsesStep2 = {
                     "Графики"
                 ],
                 [
-                    "Подписка",
+                    "Контрагенты",
                     "Справка"
                 ]
             ],

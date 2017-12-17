@@ -89,6 +89,21 @@ class FireBaseModule {
             });
         });
     }
+    static GetCostsStatisticsLocation(userId, startDate) {
+        return new Promise((resolve) => {
+            let costsRef = firebase.database().ref('/users/' + userId + '/costs');
+            var dictionary = {};
+            costsRef.orderByChild("sys_date").startAt(startDate.getTime()).once("value").then(function (snapshot) {
+                snapshot.forEach(function (data) {
+                    dictionary[data.val().location] = 0;
+                });
+                snapshot.forEach(function (data) {
+                    dictionary[data.val().location] = dictionary[data.val().location] + Number(data.val().value);
+                });
+                resolve(dictionary);
+            });
+        });
+    }
     static UpdateSubscription(userId, value) {
         let updates = {};
         updates['/users/' + userId + '/' + 'subscription'] = value;
