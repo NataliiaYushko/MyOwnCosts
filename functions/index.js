@@ -5,6 +5,7 @@ const User = require("./user");
 const googleAssistantRequest = 'google'; // Constant to identify Google Assistant requests
 const Quiche = require('quiche');
 
+
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
     console.log('Request headers: ' + JSON.stringify(request.headers));
     console.log('Request body: ' + JSON.stringify(request.body));
@@ -34,6 +35,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         request: request,
         response: response
     });
+    let Colors = ["4286f4","f4901e","f08080","4a6e73","00ffdf","281c08","008955","8b475d","ffc4a7","b485a0","cd5b45","186321"];
 
     // Create handlers for Dialogflow actions as well as a 'default' handler
     const actionHandlers = {
@@ -216,6 +218,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 dateStat.setTime(dateStat.getTime() - Math.abs(dateParametr.getTime() - dateStat.getTime()));
                 console.log(dateStat.toDateString());
                 firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
+                    var Counter = 0; 
                     var labels = [];
                     var pie = new Quiche('pie');
                     pie.setWidth(600);
@@ -225,7 +228,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                     pie.setLegendColor('000000');
                     pie.setLegendSize(15);
                     for (key in dictionary) {
-                        pie.addData(dictionary[key], key);
+                        Counter++; 
+                        pie.addData(dictionary[key],key,Colors[Counter]);
                         labels.push(key);
                     }
                     pie.setLabel(labels); // Add labels to pie segments
