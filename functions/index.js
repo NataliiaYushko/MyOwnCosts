@@ -1,9 +1,9 @@
 const firebase = require("./firebase");
-// const ChartjsNode = require('chartjs-node');
 const functions = require('firebase-functions'); // Cloud Functions for Firebase library
 const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 const User = require("./user");
 const googleAssistantRequest = 'google'; // Constant to identify Google Assistant requests
+const Quiche = require('quiche');
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
     console.log('Request headers: ' + JSON.stringify(request.headers));
@@ -21,7 +21,14 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     // Get the request source (Google Assistant, Slack, API, etc) and initialize DialogflowApp
     const requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
 
-    const userId = requestSource == 'telegram' ? request.body.originalRequest.data.message.from.id : request.body.originalRequest.data.sender.id;
+    let userId = "";
+    switch(requestSource) {
+        case 'telegram':
+        userId = request.body.originalRequest.data.message.from.id;
+        break;
+        case 'facebook':
+        userId = request.body.originalRequest.data.sender.id;
+    }
     const date = new Date();
     const app = new DialogflowApp({
         request: request,
@@ -209,11 +216,21 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 dateStat.setTime(dateStat.getTime() - Math.abs(dateParametr.getTime() - dateStat.getTime()));
                 console.log(dateStat.toDateString());
                 firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
-                    var str = 'Графики трат от ' + dateStat.getDate() + '.' + (dateStat.getMonth()+1) + '.' + dateStat.getFullYear()  + ':\n';
+                    var labels = [];
+                    var pie = new Quiche('pie');
+                    pie.setWidth(600);
+                    pie.setHeight(400);
+                    pie.setLegendBottom();
+                    pie.setAutoScaling();
+                    pie.setLegendColor('000000');
+                    pie.setLegendSize(15);
                     for (key in dictionary) {
-                        str = str + key + ' : ' + dictionary[key] + '\n';
+                        pie.addData(dictionary[key], key);
+                        labels.push(key);
                     }
-                    SendSimpleResponseOnPostAction(str);
+                    pie.setLabel(labels); // Add labels to pie segments
+                    var imageUrl = pie.getUrl(true); // First param controls http vs. https
+                    sendImageRichResponse(imageUrl, chartJsOptions);
                 });
             } else {
                 sendRichResponse(request.body.result.fulfillment.speech, richResponsesGraphicksStep1);
@@ -240,36 +257,21 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 break;
             }
             firebase.default.GetCostsStatistics(userId, dateStat, 'eat').then((dictionary) => {
-                // var chartNode = new ChartjsNode(600, 600);
-                // return chartNode.drawChart(chartJsOptions)
-                // .then(() => {
-                //     // chart is created
-                
-                //     // get image as png buffer
-                //     return chartNode.getImageBuffer('image/png');
-                // })
-                // .then(buffer => {
-                //     Array.isArray(buffer) // => true
-                //     // as a stream
-                //     return chartNode.getImageStream('image/png');
-                // })
-                // .then(streamResult => {
-                //     // using the length property you can do things like
-                //     // directly upload the image to s3 by using the
-                //     // stream and length properties
-                //     streamResult.stream // => Stream object
-                //     streamResult.length // => Integer length of stream
-                //     // write to a file
-                //     return chartNode.writeImageToFile('image/png', './testimage.png');
-                // })
-                // .then(() => {
-                //     // chart is now written to the file path
-                //     // ./testimage.png
-                // });
+                var labels = [];
+                var pie = new Quiche('pie');
+                pie.setWidth(600);
+                pie.setHeight(400);
+                pie.setLegendBottom();
+                pie.setAutoScaling();
+                pie.setLegendColor('000000');
+                pie.setLegendSize(15);
                 for (key in dictionary) {
-                    str = str + key + ' : ' + dictionary[key] + '\n';
+                    pie.addData(dictionary[key], key);
+                    labels.push(key);
                 }
-                sendRichResponse(str, richResponsesStep2);
+                pie.setLabel(labels); // Add labels to pie segments
+                var imageUrl = pie.getUrl(true); // First param controls http vs. https
+                sendImageRichResponse(imageUrl, chartJsOptions);
             });
         },
         // Default handler for unknown or undefined actions
@@ -380,6 +382,24 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
         response.json(responseJson); // Send response to Dialogflow
     }
+
+    function sendImageRichResponse(imageUrl, richResponses) {
+        
+                // If the response to the user includes rich responses or contexts send them to Dialogflow
+                let responseJson = {};
+                // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
+                responseJson.speech = request.body.result.fulfillment.speech;
+                responseJson.displayText = request.body.result.fulfillment.speech;
+        
+                // Optional: add rich messages for integrations (https://dialogflow.com/docs/rich-messages)
+                //responseJson.data = richResponses;
+                //responseJson.data.telegram.attachment.imageUrl = imageUrl;
+                responseJson.messages = imgMSG;
+                responseJson.messages[0].imageUrl = imageUrl;
+                // Optional: add contexts (https://dialogflow.com/docs/contexts)
+                //responseJson.contextOut = inputContexts;
+                response.json(responseJson); // Send response to Dialogflow
+            }
 });
 
 // Construct rich response for Google Assistant
@@ -487,57 +507,21 @@ const richResponsesStep2 = {
     }
 };
 
+let imgMSG = [
+    {
+        "type": 3,
+        "platform": "telegram",
+        "imageUrl": "http://www.dresden.de/media/tourismus/sehenswert/493x330_panorama_dresden_altstadt.jpg"
+    }
+]
 const chartJsOptions = {
-    "type": "pie",
-    "data": {
-        "labels": [
-            "Бытовая химия",
-            "Другое", 
-            "Здоровье", 
-            "Комунальные услуги", 
-            "Одежда", 
-            "Питание", 
-            "Предметы туалета", 
-            "Путешествия", 
-            "Развлечения", 
-            "Семья", 
-            "Техника", 
-            "Транспорт"
-        ],
-        "datasets": [{
-            "data": [5, 19, 3, 5, 2, 3, 7, 8, 9, 10, 11, 12],
-            "backgroundColor": [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)"
-            ],
-            "borderColor": [
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)",
-                "rgba(black,1)"
-            ],
-            "borderWidth": 1
-        }]
-    },
-    "options": {
-
+    "telegram": {
+      "attachment": {
+        "type": "image",
+        "payload": {
+          "url": "http://www.dresden.de/media/tourismus/sehenswert/493x330_panorama_dresden_altstadt.jpg"
+        }
+      }
     }
 }
+
