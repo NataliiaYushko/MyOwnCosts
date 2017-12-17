@@ -69,7 +69,7 @@ class FireBaseModule {
             value: cost,
             date: date.toDateString(),
             sys_date : date.getTime(),
-            location: location,
+            location: location != null ? location : 'null',
             category: category
         });
     }
