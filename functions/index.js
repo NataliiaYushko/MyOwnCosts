@@ -83,51 +83,51 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
         },
         'post.chemicals': () => {
-            firebase.default.writeCostData(userId, 'Бытовая химия', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Бытовая химия', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.others': () => {
-            firebase.default.writeCostData(userId, 'Другое', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Другое', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.health': () => {
-            firebase.default.writeCostData(userId, 'Здоровье', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Здоровье', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.utilities': () => {
-            firebase.default.writeCostData(userId, 'Комунальные услуги', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Комунальные услуги', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.clothes': () => {
-            firebase.default.writeCostData(userId, 'Одежда', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Одежда', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.eat': () => {
-            firebase.default.writeCostData(userId, 'Питание', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Питание', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.toiletware': () => {
-            firebase.default.writeCostData(userId, 'Предметы туалета', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Предметы туалета', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.travel': () => {
-            firebase.default.writeCostData(userId, 'Путешествия', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Путешествия', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.entertainment': () => {
-            firebase.default.writeCostData(userId, 'Развлечения', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Развлечения', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.family': () => {
-            firebase.default.writeCostData(userId, 'Семья', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Семья', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.technique': () => {
-            firebase.default.writeCostData(userId, 'Техника', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Техника', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'post.transport': () => {
-            firebase.default.writeCostData(userId, 'Транспорт', date, parameters.cost, parameters.Place);
+            firebase.default.writeCostData(userId, 'Транспорт', date, parameters);
             SendSimpleResponseOnPostAction(request.body.result.fulfillment.speech);
         },
         'show.statistics.step1': () => {
