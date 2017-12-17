@@ -66,9 +66,9 @@ class FireBaseModule {
         let userRefCosts = firebase.database().ref('/users/' + userId + '/costs');
         userRefCosts.push();
         userRefCosts.push({
-            value: cost,
+            value: parameters.cost,
             date: parameters.date != null ? parameters.date.toDateString() : date.toDateString(),
-            sys_date : parameters.date != null ? parameters.date.getTime() : date.getTime(),
+            sys_date : parameters.date != null ? new Date(parameters.date).getTime() : date.getTime(),
             location: parameters.location != null ? parameters.location : 'null',
             category: category
         });
