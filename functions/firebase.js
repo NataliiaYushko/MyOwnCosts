@@ -67,7 +67,7 @@ class FireBaseModule {
         userRefCosts.push();
         userRefCosts.push({
             value: parameters.cost,
-            date: parameters.date != null ? parameters.date.toDateString() : date.toDateString(),
+            date: parameters.date != null ? new Date(parameters.date).toDateString() : date.toDateString(),
             sys_date : parameters.date != null ? new Date(parameters.date).getTime() : date.getTime(),
             location: parameters.location != null ? parameters.location : 'null',
             category: category
