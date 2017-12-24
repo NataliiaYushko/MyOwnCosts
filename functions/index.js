@@ -21,7 +21,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
     // Get the request source (Google Assistant, Slack, API, etc) and initialize DialogflowApp
     const requestSource = (request.body.originalRequest) ? request.body.originalRequest.source : undefined;
-
+/**
+ * user identificator
+ * @type {string}
+ */
     let userId = "";
     switch(requestSource) {
         case 'telegram':
@@ -30,16 +33,33 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         case 'facebook':
         userId = request.body.originalRequest.data.sender.id;
     }
+    /**
+     * Insetring date
+     * @type {Date}
+     */
     const date = new Date();
+    /**
+     * @type {Object}
+     */
     const app = new DialogflowApp({
         request: request,
         response: response
     });
+    /**
+     * Colors for grafic statistic
+     * @type {array}
+     */
     let Colors = ["4286f4","f4901e","f08080","4a6e73","00ffdf","281c08","008955","8b475d","ffc4a7","b485a0","cd5b45","186321"];
 
-    // Create handlers for Dialogflow actions as well as a 'default' handler
+    /**
+     * Create handlers for Dialogflow actions as well as a 'default' handler
+     * @type {Object}
+     * @static
+     */
     const actionHandlers = {
-        // The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
+        /**
+         * The default welcome intent has been matched, welcome the user (https://dialogflow.com/docs/events#default_welcome_intent)
+         */
         'input.welcome': () => {
             switch (requestSource) {
                 case googleAssistantRequest:
@@ -48,6 +68,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 case 'facebook':
                     sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                     var jsonuser = request.body.originalRequest.data.sender;
+                    /**
+                     * facebook user
+                     * @type {Object}
+                     */
                     var user1 = {
                         id: jsonuser.id,
                         reg_date: date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(),
@@ -59,6 +83,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                     sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                     var jsonuser = request.body.originalRequest.data.message.from;
                     console.log('jsonuser: ' + JSON.stringify(jsonuser));
+                     /**
+                     * telegram user
+                     * @type {Object}
+                     */
                     var user1 = new User.default(jsonuser.first_name, jsonuser.last_name, jsonuser.id, date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear(), requestSource);
                     firebase.default.writeUserData(user1.id, user1);
                     break;
@@ -66,15 +94,21 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                     sendResponse('Привет!!! \n Я очень рад тебя видеть! \n Теперь я буду твоим персональным помощником, и буду всячески помогать тебе следить за своими расходами. \n Сейчас я еще маленький, и только учусь понимать людей :) Но я обещаю, что буду расти и понимать тебя лучше! Надеюсь мы сработаемся)');
                     break;
             }
-            // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+            /**
+             * Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+             */
             if (requestSource === googleAssistantRequest) {
 
             } else {
-                // Send simple response to user
+                /** 
+                * Send simple response to user 
+                 */
             }
         },
-        // The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
-        'input.unknown': () => {
+        /**
+         * The default fallback intent has been matched, try to recover (https://dialogflow.com/docs/intents#fallback_intents)
+        */
+         'input.unknown': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
                 sendGoogleResponse('I\'m having trouble, can you try that again?'); // Send simple response to user
@@ -353,7 +387,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
                 sendImageRichResponse(imageUrl, chartJsOptions);
             });
          },
-        // Default handler for unknown or undefined actions
+        /**
+         * Default handler for unknown or undefined actions
+         */
         'default': () => {
             // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
@@ -377,9 +413,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
     // Run the proper handler function to handle the request from Dialogflow
     actionHandlers[action]();
-
+/**
+ * Use the Actions on Google lib to respond to Google requests; for other requests use JSON
+ * @param {string} message 
+ */
     function SendSimpleResponseOnPostAction(message) {
-        // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
         if (requestSource === googleAssistantRequest) {
             sendGoogleResponse(message); // Send simple response to user
         } else {
@@ -387,7 +425,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         }
     }
 
-    // Function to send correctly formatted Google Assistant responses to Dialogflow which are then sent to the user
+    /**
+     * send correctly formatted Google Assistant responses to Dialogflow which are then sent to the user
+     * @param {string} responseToUser
+     */
     function sendGoogleResponse(responseToUser) {
         if (typeof responseToUser === 'string') {
             app.ask(responseToUser); // Google Assistant response
@@ -412,7 +453,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         }
     }
 
-    // Function to send correctly formatted responses to Dialogflow which are then sent to the user
+   /**
+    * send correctly formatted responses to Dialogflow which are then sent to the user
+    * @param {string} responseToUser 
+    */
     function sendResponse(responseToUser) {
         // if the response is a string send it as a response to the user
         if (typeof responseToUser === 'string') {
@@ -437,13 +481,16 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             response.json(responseJson); // Send response to Dialogflow
         }
     }
-
+    /**
+    * If the response to the user includes rich responses or contexts send them to Dialogflow
+    * If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
+    * @param {string} responseToUser 
+    * @param {string} richResponses 
+    */
     function sendRichResponse(responseToUser, richResponses) {
 
-        // If the response to the user includes rich responses or contexts send them to Dialogflow
         let responseJson = {};
 
-        // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
         responseJson.speech = responseToUser;
         responseJson.displayText = responseToUser;
 
@@ -461,10 +508,13 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
         response.json(responseJson); // Send response to Dialogflow
     }
-
+/**
+ *  If the response to the user includes rich responses or contexts send them to Dialogflow
+ * @param {string} imageUrl 
+ * @param {string} richResponses 
+ */
     function sendImageRichResponse(imageUrl, richResponses) {
         
-                // If the response to the user includes rich responses or contexts send them to Dialogflow
                 let responseJson = {};
                 // If speech or displayText is defined, use it to respond (if one isn't defined use the other's value)
                 responseJson.speech = request.body.result.fulfillment.speech;
@@ -481,7 +531,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
             }
 });
 
-// Construct rich response for Google Assistant
+/**
+ * Construct rich response for Google Assistant
+ * @type {Object}
+ * @const 
+ */
 const app = new DialogflowApp();
 const googleRichResponse = app.buildRichResponse()
     .addSimpleResponse('This is the first simple response for Google Assistant')
@@ -505,7 +559,10 @@ const googleRichResponse = app.buildRichResponse()
         displayText: 'This is the another simple response 💁'
     });
 
-// Rich responses for both Slack and Facebook
+/**Rich response for both Slack and Facebook. Graphicks, step 1
+ * @type {Object}
+ * @const
+ */
 const richResponsesGraphicksStep1 = {
     'telegram': {
         "text": "Выбери нужный вариант:",
@@ -525,6 +582,10 @@ const richResponsesGraphicksStep1 = {
         }
     }
 };
+/**Rich response for both Slack and Facebook. Statistic, step 1
+ * @type {Object}
+ * @const
+ */
 const richResponsesStatisticsStep1 = {
     'telegram': {
         "text": "Выбери нужный тебе вариант :)",
@@ -544,6 +605,10 @@ const richResponsesStatisticsStep1 = {
         }
     }
 };
+/**Rich response for both Slack and Facebook. Location, step 1
+ * @type {Object}
+ * @const
+ */
 const richResponsesLocationsStep1 = {
     "telegram": {
         "text": "Выбери период для графиков по контрагентам:",
@@ -563,6 +628,10 @@ const richResponsesLocationsStep1 = {
         }
     }
 };
+/**Rich response for both Slack and Facebook. Step 2
+ * @type {Object}
+ * @const
+ */
 const richResponsesStep2 = {
     'telegram': {
         "text": "Выбери нужный тебе вариант: ",

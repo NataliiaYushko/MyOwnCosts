@@ -9,7 +9,20 @@ admin.initializeApp({
     databaseURL: "https://myowncosts-2ad50.firebaseio.com"
 });
 var firebase = admin;
+
+/**
+ * to subscribe module with works firebase
+ * @type {Class}
+ */
 class FireBaseModule {
+    /**
+     * to select data according to Field
+     * @static
+     * @param {string} data_path 
+     * @param {string} getFrom 
+     * @param {string} field 
+     * @param {string} fieldValue 
+     */
     static selectDataByField(data_path, getFrom, field, fieldValue) {
         return new Promise((resolve) => {
             let fbRef = firebase.database().ref();
@@ -19,6 +32,13 @@ class FireBaseModule {
             });
         });
     }
+    /**
+     * to sellect data according to Key
+     * @static
+     * @param {string} data_path 
+     * @param {string} getFrom 
+     * @param {string} fieldValue 
+     */
     static selectDataByKey(data_path, getFrom, fieldValue) {
         return new Promise((resolve) => {
             let fbRef = firebase.database().ref();
@@ -28,6 +48,13 @@ class FireBaseModule {
             });
         });
     }
+    /**
+     *to insert new data to db
+     * @static
+     * @param {string} file_path 
+     * @param {string} data 
+     * @param {string} key 
+     */
     static insertData(file_path, data, key) {
         return new Promise((resolve, reject) => {
             if (key == null) {
@@ -40,6 +67,14 @@ class FireBaseModule {
             });
         });
     }
+    /**
+     * to check Data according to field
+     * @static
+     * @param {string} data_path 
+     * @param {String} getFrom 
+     * @param {String} field 
+     * @param {String} fieldValue 
+     */
     static checkDataByField(data_path, getFrom, field, fieldValue) {
         return new Promise((resolve) => {
             let fbRef = firebase.database().ref(data_path);
@@ -52,6 +87,12 @@ class FireBaseModule {
             });
         });
     }
+    /**
+     * to insert userdata to db
+     * @static
+     * @param {string} userId 
+     * @param {object} user 
+     */
     static writeUserData(userId, user) {
         let userRef = firebase.database().ref('/users/' + userId);
         userRef.once("value", function (snapshot) {
@@ -61,7 +102,14 @@ class FireBaseModule {
         });
     }
 
-
+/**
+ * to insert cost data to db
+ * @static
+ * @param {string} userId 
+ * @param {string} category 
+ * @param {sring} date 
+ * @param {object} parameters 
+ */
     static writeCostData(userId, category, date, parameters) {
         let userRefCosts = firebase.database().ref('/users/' + userId + '/costs');
         userRefCosts.push();
@@ -73,7 +121,13 @@ class FireBaseModule {
             category: category
         });
     }
-
+/**
+ * get user statistic according to date and category
+ * @static
+ * @param {string} userId 
+ * @param {Date} startDate 
+ * @param {string} category 
+ */
     static GetCostsStatistics(userId, startDate, category) {
         return new Promise((resolve) => {
             let costsRef = firebase.database().ref('/users/' + userId + '/costs');
@@ -89,6 +143,12 @@ class FireBaseModule {
             });
         });
     }
+/**
+ * get user statistic according to date and location
+ * @static
+ * @param {string} userId 
+ * @param {date} startDate 
+ */
     static GetCostsStatisticsLocation(userId, startDate) {
         return new Promise((resolve) => {
             let costsRef = firebase.database().ref('/users/' + userId + '/costs');
@@ -104,6 +164,12 @@ class FireBaseModule {
             });
         });
     }
+    /**
+     * send update to firebase
+     * @static
+     * @param {string} userId 
+     * @param {object} value 
+     */
     static UpdateSubscription(userId, value) {
         let updates = {};
         updates['/users/' + userId + '/' + 'subscription'] = value;
